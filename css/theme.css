@@ -96,6 +96,50 @@ button:active {
   background-color: var(--button-active-color);
 }
 
+/* Input styles */
+input {
+  padding: 8px;
+  border: 1px solid var(--gray-400);
+  border-radius: 4px;
+  background-color: var(--gray-800);
+  color: var(--primary-text-color);
+}
+
+input::placeholder {
+  color: var(--gray-500);
+}
+
+input:hover {
+  border-color: var(--gray-200);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+}
+
+textarea {
+  padding: 8px;
+  border: 1px solid var(--gray-400);
+  border-radius: 4px;
+  background-color: var(--gray-800);
+  color: var(--primary-text-color);
+}
+
+textarea::placeholder {
+  color: var(--gray-500);
+}
+
+textarea:hover {
+  border-color: var(--gray-200);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+}
+
+/* Styling the scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
