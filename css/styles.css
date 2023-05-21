@@ -1,0 +1,15 @@
+.page_container {
+  max-width: 1280px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+  padding: 2vw;
+  margin: 0 auto;
+}
+
+.textarea_code {
+  min-height: 50vh;
+  resize: vertical;
+}
