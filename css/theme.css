@@ -83,8 +83,11 @@ a:visited {
 button {
   background-color: var(--button-normal-color);
   color: var(--primary-text-color);
+  font-size: 16px;
+  font-weight: 500;
   border: none;
-  padding: 10px 20px;
+  border-radius: 8px;
+  padding: 12px 24px;
   cursor: pointer;
 }
 
