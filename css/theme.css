@@ -36,6 +36,15 @@
   --gray-700: #616161;
   --gray-800: #424242;
   --gray-900: #212121;
+
+  /* Danger */
+  --danger: #dc3545;
+
+  /* Warning */
+  --warning: #ffc107;
+
+  /* Success */
+  --success: #28a745;
 }
 
 * {
