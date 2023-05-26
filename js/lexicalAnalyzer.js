@@ -19,8 +19,8 @@ const lexicalAnalysis = (input) => {
     let char = input[current];
 
     // Compara o caractere atual com a lista de caracteres aceitos
-    if (char in tokenMappings) {
-      addToken(tokenMappings[char], char);
+    if (char in basicLexicalTokens) {
+      addToken(basicLexicalTokens[char], char);
       continue;
     }
 

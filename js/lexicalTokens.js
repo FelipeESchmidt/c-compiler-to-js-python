@@ -1,4 +1,4 @@
-const tokenMappings = {
+const basicLexicalTokens = {
   "=": "equal",
   "*": "star",
   "#": "hash",
