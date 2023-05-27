@@ -3,15 +3,17 @@ const NUMBERS = /[0-9]/;
 const NEWLINE = /\n/;
 const WHITESPACE = /\s/;
 
+/**
+ * Quebra o código em tokens
+ * @param {String} input
+ * @return {{type: String, value: String}[]} tokens
+ * */
 const lexicalAnalysis = (input) => {
   let current = 0;
   const tokens = [];
 
   const addToken = (type, value, increaseCounter = true) => {
-    tokens.push({
-      type,
-      value,
-    });
+    tokens.push({ type, value });
     if (increaseCounter) current++;
   };
 
