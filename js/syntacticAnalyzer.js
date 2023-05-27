@@ -2,10 +2,10 @@
  * Análisa os tokens e monta as estruturas
  * @param {{type: String, value: String}[]} tokens
  * */
-const parser = (tokens) => {
+const syntacticAnalysis = (tokens) => {
   let current = 0;
 
-  // Inside it, we define another function called walk() which enables use to do some recursive acrobatics
+  // Caminha pelo código fonte buscando e encontrando sequências de tokens
   const walk = () => {
     let token = tokens[current];
 
@@ -36,6 +36,7 @@ const parser = (tokens) => {
       return node;
     }
 
+    // Caso encontre um '\' valida as suas possibilidades
     if (token.type === "backslash") {
       const { type, value } = tokens[++current];
       let currentTypeAndNext;
@@ -48,11 +49,14 @@ const parser = (tokens) => {
       }
     }
 
+    // Caso encontre token básico apenas troca o seu nome
     if (token.type in basicSyntaticTokens) {
       current++;
       return { ...basicSyntaticTokens[token.type], value: token.value };
     }
 
+    // Validação por token duplo (==, ||), current não pode ser o último index
+    // Valida tokens duplos e agrupa-os com o nome correto
     if (current < tokens.length) {
       const { type } = tokens[current + 1];
       const currentTypeAndNext = token.type + "_" + type;
@@ -62,16 +66,16 @@ const parser = (tokens) => {
       }
     }
 
+    // Caso não seja um token duplo então busca pelo token normal (=, |)
     if (token.type in doubleSyntaticTokens) {
       current++;
       return doubleSyntaticTokens[token.type];
     }
 
-    //if we don't recognize the token, we throw an error.
-    throw new TypeError(token.type);
+    // Caso encontre um token que não é tratável
+    throw new TypeError("Erro! Token não tratável", token.type);
   };
 
-  // we declare this variable named AST, and start our walk() function to parse our tokens.
   const programTokens = {
     type: "Program",
     body: [],

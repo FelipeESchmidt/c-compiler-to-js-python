@@ -13,7 +13,7 @@ const getTextAreaValue = () => {
 const compileCode = () => {
   const codeInC = getTextAreaValue();
   const tokens = lexicalAnalysis(codeInC);
-  const tokensParsed = parser(tokens);
+  const tokensParsed = syntacticAnalysis(tokens);
   console.log(tokensParsed);
 };
 
