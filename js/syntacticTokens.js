@@ -56,3 +56,9 @@ const backslashSyntaticTokens = {
   backslash_b: { type: "Backspace", value: /\b/ },
   backslash_question: { type: "QueMark", value: /\?/ },
 };
+
+const complexSyntaticTokens = {
+  bracket: { initiator: "[", finisher: "]", type: "Arr" },
+  curly: { initiator: "{", finisher: "}", type: "CodeDomain" },
+  paren: { initiator: "(", finisher: ")", type: "CodeCave", nameGetter: true },
+};

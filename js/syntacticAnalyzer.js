@@ -9,74 +9,29 @@ const parser = (tokens) => {
   const walk = () => {
     let token = tokens[current];
 
-    /* here we perform some recursive acrobatics. If we encounter an opening bracket, we create a
-      new node, call our walk fuction again and push whatever there is inside the bracket,
-      inside a child node. When we reach the closing bracket, we stop and push the child node,
-      in its parent node */
-    if (token.type === "bracket" && token.value === "[") {
+    // Caso encontre um token complexo, entra em recursão até encontrar seu finalizador
+    if (token.type in complexSyntaticTokens) {
+      const { finisher, type, nameGetter } = complexSyntaticTokens[token.type];
+
       token = tokens[++current];
+
+      let name = undefined;
+      if (nameGetter) {
+        let prevToken = tokens[current - 2];
+        name =
+          prevToken && prevToken.type === "name" ? prevToken.value : undefined;
+      }
 
       let node = {
-        type: "Arr",
+        type: type,
         params: [],
+        name,
       };
 
-      while (
-        token.type !== "bracket" ||
-        (token.type === "bracket" && token.value !== "]")
-      ) {
+      while (token.value !== finisher) {
         node.params.push(walk());
         token = tokens[current];
       }
-      current++;
-      return node;
-    }
-
-    // same story here. This time we call it a 'CodeDomain'.
-    if (token.type === "curly" && token.value === "{") {
-      token = tokens[++current];
-
-      let node = {
-        type: "CodeDomain",
-        params: [],
-      };
-
-      while (
-        token.type !== "curly" ||
-        (token.type === "curly" && token.value !== "}")
-      ) {
-        node.params.push(walk());
-        token = tokens[current];
-      }
-      current++;
-      return node;
-    }
-
-    // same as brackets and curly braces but for paranthesis, we call it 'CodeCave'
-    if (token.type === "paren" && token.value === "(") {
-      token = tokens[++current];
-      let prevToken = tokens[current - 2];
-      if (typeof prevToken != "undefined" && prevToken.type === "name") {
-        var node = {
-          type: "CodeCave",
-          name: prevToken.value,
-          params: [],
-        };
-      } else {
-        var node = {
-          type: "CodeCave",
-          params: [],
-        };
-      }
-
-      while (
-        token.type !== "paren" ||
-        (token.type === "paren" && token.value !== ")")
-      ) {
-        node.params.push(walk());
-        token = tokens[current];
-      }
-
       current++;
       return node;
     }
