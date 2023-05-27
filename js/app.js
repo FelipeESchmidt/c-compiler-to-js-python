@@ -13,7 +13,8 @@ const getTextAreaValue = () => {
 const compileCode = () => {
   const codeInC = getTextAreaValue();
   const tokens = lexicalAnalysis(codeInC);
-  console.log(tokens);
+  const tokensParsed = parser(tokens);
+  console.log(tokensParsed);
 };
 
 compileButton.addEventListener("click", compileCode);
