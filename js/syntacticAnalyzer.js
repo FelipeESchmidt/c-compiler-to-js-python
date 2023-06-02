@@ -1,6 +1,12 @@
 /**
  * Análisa os tokens e monta as estruturas
  * @param {{type: String, value: String}[]} tokens
+ * @return {{
+ * type: "Program",
+ * body: ({ type: string; value: string; } |
+ *        { type: "CodeCave"; params: { type: string; value: string; }[]; name: string; value: string; } |
+ *        { type: "CodeDomain"; params: { type: string; value: string; }[]; value: string; })[]
+ * }} tokensParsed
  * */
 const syntacticAnalysis = (tokens) => {
   let current = 0;
