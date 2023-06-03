@@ -18,4 +18,10 @@ const compileCode = () => {
   const processedCode = processor(tokensStructured);
 };
 
-compileButton.addEventListener("click", compileCode);
+compileButton.addEventListener("click", () => {
+  try {
+    compileCode();
+  } catch (error) {
+    showMessage(error.message);
+  }
+});
