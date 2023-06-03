@@ -15,6 +15,7 @@ const compileCode = () => {
   const tokens = lexicalAnalysis(codeInC);
   const tokensParsed = syntacticAnalysis(tokens);
   const tokensStructured = syntacticAnalysis2(tokensParsed);
+  const processedCode = processor(tokensStructured);
 };
 
 compileButton.addEventListener("click", compileCode);
