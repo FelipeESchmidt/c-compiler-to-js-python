@@ -20,6 +20,9 @@ const processor = (ast) => {
     body: globalStatementsProcessed,
   };
 
+  // Aqui buscamos as funções do código e organizamos melhor as informações da função
+  const codeFunctions = findFuncs(ast.body);
+
 };
 
 /**
@@ -173,4 +176,51 @@ const processGlobalStatements = (globalStatements) => {
       ? betterers[globalStatement.type](globalStatement)
       : globalStatement
   );
+};
+
+/**
+ * Busca retornar as funções do programa e reorganiza elas
+ * @param {({ type: string; value: string; } |
+ *        { type: "Function"; expression: { arguments: { type: string; value: string; }[]; type: string; callee?: { type: 'Identifier', name: string } } } |
+ *        { type: "CodeCave"; params: { type: string; value: string; }[]; name: string; value: string; } |
+ *        { type: "CodeDomain"; params: { type: string; value: string; }[]; value: string; })[]} astBody
+ * */
+const findFuncs = (astBody) => {
+  const functions = [];
+
+  // Percorre toda a AST
+  for (let i = 0; i < astBody.length; i++) {
+    if (
+      astBody[i].type === "Function" &&
+      astBody[i].expression.hasOwnProperty("callee") &&
+      astBody[i].expression.callee.type === "Identifier"
+    ) {
+      // A função precisa ter a seguinte sequencia  [retorno]  [nome]  [argumentos|callee|]   [body|CodeDomain|]
+      // Verifica se é a definição de uma função    [Word]     [Word]  [Function]             [Function]
+      const functionSequence = astBody.slice(i - 2, i + 2);
+
+      if (
+        functionSequence[0].type === "Word" &&
+        functionSequence[1].type === "Word" &&
+        functionSequence[3].type === "Function" &&
+        functionSequence[3].expression.type === "CodeDomain"
+      ) {
+        const isMain = functionSequence[2].expression.callee.name === "main";
+        functions.push({
+          type: isMain ? "EntryPoint" : "FunctionDefinition",
+          name: functionSequence[2].expression.callee.name,
+          args: functionSequence[2].expression.arguments,
+          body: functionSequence[3].expression.arguments,
+          returnType: functionSequence[0].value,
+        });
+      } else {
+        throw new TypeError(
+          `Função ${functionSequence[2].expression.callee.name} não atende os requisitos de uma função`
+        );
+      }
+    }
+  }
+
+  // Retorna as funções encontradas e organizadas
+  return functions;
 };
