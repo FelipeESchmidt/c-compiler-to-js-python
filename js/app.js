@@ -14,7 +14,7 @@ const compileCode = () => {
   const codeInC = getTextAreaValue();
   const tokens = lexicalAnalysis(codeInC);
   const tokensParsed = syntacticAnalysis(tokens);
-  console.log(tokensParsed);
+  const tokensStructured = syntacticAnalysis2(tokensParsed);
 };
 
 compileButton.addEventListener("click", compileCode);
