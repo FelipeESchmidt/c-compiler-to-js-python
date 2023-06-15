@@ -373,6 +373,14 @@ const processBody = (inside) => {
           continue;
         }
 
+        if (
+          currentInsideStart.type === "Word" &&
+          inside[start + 1].type === "CodeCave"
+        ) {
+          start += 3;
+          continue;
+        }
+
         phrase.push({
           type: currentInsideStart.type,
           value: currentInsideStart.value,
@@ -380,7 +388,7 @@ const processBody = (inside) => {
         start++;
       }
 
-      pushStatement(statementBuilder(phrase), false);
+      if (phrase.length) pushStatement(statementBuilder(phrase), false);
     }
 
     const lastItem = current === inside.length - 1;
