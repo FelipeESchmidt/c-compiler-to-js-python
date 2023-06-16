@@ -16,6 +16,7 @@ const compileCode = () => {
   const tokensParsed = syntacticAnalysis(tokens);
   const tokensStructured = syntacticAnalysis2(tokensParsed);
   const processedCode = processor(tokensStructured);
+  const codeJS = codeGenerator(processedCode);
 };
 
 compileButton.addEventListener("click", () => {
