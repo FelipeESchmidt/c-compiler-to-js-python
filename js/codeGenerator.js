@@ -124,7 +124,7 @@ const lineTransform = (line) => {
     }
 
     if (isReturn) {
-      line.value.splice(1, 0, { value: " " });
+      return `${line.value.map((lv) => lv.value).join(" ")}`;
     }
 
     const variables = line.value
