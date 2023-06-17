@@ -110,11 +110,11 @@ const lineTransform = (line) => {
     line.value.pop();
     const firstStatementItem = line.value[0];
     const isClassInitiator = isStructInitiator(firstStatementItem);
-    const isStringInitiator = isVariableInitiator(firstStatementItem);
+    const isVariableInitiation = isVariableInitiator(firstStatementItem);
     const isReturn = isReturnInitiator(firstStatementItem);
-    const stringInitiator = isStringInitiator ? `${gtt("varInit")}` : "";
+    const stringInitiator = isVariableInitiation ? `${gtt("varInit")}` : "";
 
-    if (isStringInitiator || isClassInitiator) line.value.shift();
+    if (isVariableInitiation || isClassInitiator) line.value.shift();
 
     if (isClassInitiator) {
       const variableName = line.value.pop().value;
@@ -123,19 +123,23 @@ const lineTransform = (line) => {
       }()`;
     }
 
-    if (isReturn) {
-      return `${line.value.map((lv) => lv.value).join(" ")}`;
+    if (isVariableInitiation) {
+      const variables = line.value
+        .map((lv) => gstt(lv.type) || lv.value)
+        .join("")
+        .split(",")
+        .map(gtt("excludeEmptyDefinition"))
+        .filter((item) => !!item)
+        .join(gtt("varSeparator"));
+
+      return variables ? `${stringInitiator}${variables}` : "";
     }
 
-    const variables = line.value
-      .map((lv) => gstt(lv.type) || lv.value)
-      .join("")
-      .split(",")
-      .map(gtt("excludeEmptyDefinition"))
-      .filter((item) => !!item)
-      .join(gtt("varSeparator"));
+    if (isReturn) {
+      line.value.splice(1, 0, { value: " " });
+    }
 
-    return variables ? `${stringInitiator}${variables}` : "";
+    return `${line.value.map((lv) => lv.value).join("")}`;
   }
   if (line.type === "Struct") {
     return [
