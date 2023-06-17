@@ -34,7 +34,8 @@ const pythonScanByType = (type) => {
   return types[type];
 };
 
-const getTranslationToken = (token, language = "py") => {
+const getTranslationToken = (token) => {
+  const language = codeTextarea.getAttribute("lan");
   return translationTokens[token][language];
 };
 

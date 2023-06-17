@@ -10,7 +10,7 @@
 }
 
 .textarea_code {
-  min-height: 50vh;
+  min-height: 40vh;
   resize: vertical;
 }
 
@@ -40,4 +40,36 @@
 
 .message_text {
   text-align: center;
+}
+
+.options {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+}
+
+.options > button {
+  flex: 1;
+}
+
+.textarea_wrapper {
+  position: relative;
+}
+
+.textarea_wrapper > .textarea_code {
+  width: 100%;
+}
+
+aside {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 20px;
+  border-radius: 8px;
+  background-color: var(--secondary-background-color);
 }

@@ -19,13 +19,29 @@
   <body>
     <div class="page_container">
       <h2>Adicione seu código em C abaixo:</h2>
+      <div class="textarea_wrapper">
+        <aside class="examples">
+          <button id="js_example">Exemplo para JS</button>
+          <button id="py_example">Exemplo para PY</button>
+          <button class="danger" id="clear_code">Limpar</button>
+        </aside>
+        <textarea
+          class="textarea_code"
+          name="c_code"
+          id="c_code_textarea"
+          rows="10"
+        ></textarea>
+      </div>
+      <div class="options">
+        <button id="compile_code_to_js_button">Compilar para JS</button>
+        <button id="compile_code_to_py_button">Compilar para PY</button>
+      </div>
       <textarea
         class="textarea_code"
-        name="c_code"
-        id="c_code_textarea"
+        name="compiled_code"
+        id="compiled_code_textarea"
         rows="10"
       ></textarea>
-      <button id="compile_code_button">Compilar código</button>
     </div>
 
     <div class="message" id="message"></div>
