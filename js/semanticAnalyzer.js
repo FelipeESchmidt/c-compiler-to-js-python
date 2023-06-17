@@ -369,6 +369,13 @@ const processBody = (inside) => {
           currentInsideStart.type === "Word" &&
           terminatorStepper[currentInsideStart.value]
         ) {
+          if (
+            currentInsideStart.value === "else" &&
+            inside[start + 1].value === "if"
+          ) {
+            start += terminatorStepper["elseif"];
+            continue;
+          }
           start += terminatorStepper[currentInsideStart.value];
           continue;
         }
@@ -381,6 +388,11 @@ const processBody = (inside) => {
           continue;
         }
 
+        if (!currentInsideStart.value && currentInsideStart.arguments)
+          currentInsideStart.value = `(${currentInsideStart.arguments
+            .map((arg) => arg.value)
+            .join("")})`;
+
         phrase.push({
           type: currentInsideStart.type,
           value: currentInsideStart.value,
@@ -388,7 +400,7 @@ const processBody = (inside) => {
         start++;
       }
 
-      if (phrase.length) pushStatement(statementBuilder(phrase), false);
+      if (phrase.length > 1) pushStatement(statementBuilder(phrase), false);
     }
 
     const lastItem = current === inside.length - 1;

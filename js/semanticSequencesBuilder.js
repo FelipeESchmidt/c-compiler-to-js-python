@@ -13,6 +13,7 @@ const terminatorStepper = {
   while: 3,
   do: 5,
   else: 2,
+  elseif: 4,
 };
 
 const endableTypes = ["Terminator", "CodeDomain"];
