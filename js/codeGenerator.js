@@ -126,10 +126,16 @@ const lineTransform = (line) => {
     if (isReturn) {
       line.value.splice(1, 0, { value: " " });
     }
-    return `${stringInitiator}${line.value
+
+    const variables = line.value
       .map((lv) => gstt(lv.type) || lv.value)
       .join("")
-      .replaceAll(",", gtt("varSeparator"))}`;
+      .split(",")
+      .map(gtt("excludeEmptyDefinition"))
+      .filter((item) => !!item)
+      .join(gtt("varSeparator"));
+
+    return variables ? `${stringInitiator}${variables}` : "";
   }
   if (line.type === "Struct") {
     return [

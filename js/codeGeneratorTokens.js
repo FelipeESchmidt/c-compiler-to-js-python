@@ -38,9 +38,9 @@ const getTranslationToken = (token, language = "py") => {
   return translationTokens[token][language];
 };
 
-const getSafeTranslationToken = (token, language = "py") => {
+const getSafeTranslationToken = (token) => {
   if (!translationTokens[token]) return;
-  return translationTokens[token][language];
+  return getTranslationToken(token);
 };
 
 const gtt = getTranslationToken;
@@ -58,6 +58,10 @@ const translationTokens = {
   varSeparator: {
     js: ",",
     py: ";",
+  },
+  excludeEmptyDefinition: {
+    js: (v) => v,
+    py: (v) => (v.includes("=") ? v : ""),
   },
   funcInit: {
     js: "const ",
