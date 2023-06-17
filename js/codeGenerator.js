@@ -2,7 +2,7 @@ const classLineTransform = (line) => {
   line.value.pop();
   line.value.shift();
   const variableName = line.value.map((lv) => lv.value).join(" ");
-  return `this.${variableName} = ''`;
+  return `${gtt("classPropDefinition")}.${variableName} = ''`;
 };
 
 const mountIfCondition = (lineIf) => {
@@ -10,7 +10,17 @@ const mountIfCondition = (lineIf) => {
 };
 
 const mountBlockCondition = (lineBlock) => {
-  return lineBlock.condition.map((lIf) => lIf.value).join(" ");
+  return lineBlock.condition.map((lBl) => lBl.value).join(" ");
+};
+
+const mountForCondition = (lineFor) => {
+  const forCondition = gtt("forCondition");
+  if (!forCondition)
+    return lineFor.condition.map((lFor) => lFor.value).join(" ");
+
+  const variableName = lineFor.condition[0].value;
+  const endFor = lineFor.condition.at(-4).value;
+  return forCondition(variableName, endFor);
 };
 
 const functionCalleeTransform = (functionCallee) => {
@@ -27,14 +37,21 @@ const functionCalleeTransform = (functionCallee) => {
       }, []);
       const replaced = printableString.replace(
         /%[a-zA-Z]/g,
-        () => `\$\{${variables.shift()}\}`
+        () => `${gtt("printVarInit")}${variables.shift()}${gtt("printVarEnd")}`
       );
-      return `console.log(\`${replaced}\`)`;
+      return `${gtt("printFunc")}(${gtt("printStringStart")}${replaced}${gtt(
+        "printStringEnd"
+      )})`;
     }
   }
   if (functionCallee.callee === "scanf") {
     const type = functionCallee.params.shift().value;
     const variable = functionCallee.params.pop().value;
+
+    const scanFunction = gtt("scanFunc");
+    if (scanFunction) {
+      return `${variable} = ${scanFunction(type)}`;
+    }
 
     switch (type) {
       case "%d":
@@ -78,12 +95,16 @@ const preLineTransform = (line) => {
 
 const lineTransform = (line) => {
   if (line.type === "Macro") {
-    return `//${line.subtype} "${line.file}.js"`;
+    return `${gtt("comment")}${line.subtype} "${line.file}.${gtt(
+      "extension"
+    )}"`;
   }
   if (line.type === "Define") {
     const isString = line.variableType === "StringLiteral";
     const aroundValueChar = isString ? `"` : "";
-    return `const ${line.variable} = ${aroundValueChar}${line.variableValue}${aroundValueChar}`;
+    return `${gtt("constInit")}${line.variable} = ${aroundValueChar}${
+      line.variableValue
+    }${aroundValueChar}`;
   }
   if (line.type === "Statement") {
     line.value.pop();
@@ -91,75 +112,93 @@ const lineTransform = (line) => {
     const isClassInitiator = isStructInitiator(firstStatementItem);
     const isStringInitiator = isVariableInitiator(firstStatementItem);
     const isReturn = isReturnInitiator(firstStatementItem);
-    const stringInitiator = isStringInitiator ? "let " : "";
+    const stringInitiator = isStringInitiator ? `${gtt("varInit")}` : "";
 
-    if (stringInitiator || isClassInitiator) line.value.shift();
+    if (isStringInitiator || isClassInitiator) line.value.shift();
 
     if (isClassInitiator) {
       const variableName = line.value.pop().value;
-      return `let ${variableName} = new ${line.value[0].value}()`;
+      return `${gtt("varInit")}${variableName} = ${gtt("classInitiator")}${
+        line.value[0].value
+      }()`;
     }
 
     if (isReturn) {
       line.value.splice(1, 0, { value: " " });
     }
-    return `${stringInitiator}${line.value.map((lv) => lv.value).join("")}`;
+    return `${stringInitiator}${line.value
+      .map((lv) => gstt(lv.type) || lv.value)
+      .join("")
+      .replaceAll(",", gtt("varSeparator"))}`;
   }
   if (line.type === "Struct") {
     return [
-      `class ${line.name} {`,
-      `\t${line.name}(){`,
+      `class ${line.name} ${gtt("classInitStructure")}`,
+      `\t${gtt("classConstructor")(line.name)}${gtt("classInitStructure")}`,
       ...line.body.map((l) => `\t\t${classLineTransform(l)}`),
-      "\t}",
-      "}",
+      `\t${gtt("classEndStructure")}`,
+      `${gtt("classEndStructure")}`,
     ].join("\n");
   }
   if (line.type === "if") {
     return [
-      `if (${mountIfCondition(line)}) {`,
+      `if (${mountIfCondition(line)})${gtt("ifInitStructure")}`,
       ...line.body.map((l) => `\t${preLineTransform(l)}`),
-      "}",
+      `${gtt("ifEndStructure")}`,
     ].join("\n");
   }
   if (line.type === "elseif") {
     return [
-      `else if (${mountIfCondition(line)}) {`,
+      `${gtt("elseIf")} (${mountIfCondition(line)})${gtt("ifInitStructure")}`,
       ...line.body.map((l) => `\t${preLineTransform(l)}`),
-      "}",
+      `${gtt("ifEndStructure")}`,
     ].join("\n");
   }
   if (line.type === "else") {
     return [
-      `else {`,
+      `else${gtt("ifInitStructure")}`,
       ...line.body.map((l) => `\t${preLineTransform(l)}`),
-      "}",
+      `${gtt("ifEndStructure")}`,
     ].join("\n");
   }
   if (line.type === "for") {
     return [
-      `for (${mountBlockCondition(line)}) {`,
+      `for ${gtt("forConditionStart")}${mountForCondition(line)}${gtt(
+        "forConditionEnd"
+      )} ${gtt("forBlockInit")}`,
       ...line.body.map((l) => `\t${preLineTransform(l)}`),
-      "}",
+      `${gtt("forBlockEnd")}`,
     ].join("\n");
   }
   if (line.type === "while") {
     return [
-      `while (${mountBlockCondition(line)}) {`,
+      `while (${mountBlockCondition(line)}) ${gtt("whileBlockInit")}`,
       ...line.body.map((l) => `\t${preLineTransform(l)}`),
-      "}",
+      `${gtt("whileBlockEnd")}`,
+    ].join("\n");
+  }
+  if (line.type === "do") {
+    if (gtt("doException")) throw gtt("doException");
+    return [
+      `do ${gtt("doBlockInit")}`,
+      ...line.body.map((l) => `\t${preLineTransform(l)}`),
+      `${gtt("doBlockEnd")} while(${mountBlockCondition(line)})`,
     ].join("\n");
   }
   if (line.type === "Call") {
     return functionCalleeTransform(line);
   }
-  return lineReturn;
+  console.log(line);
+  return "";
 };
 
 const functionTransform = (f) => {
   const functionLines = [
-    `const ${f.name} = (${f.args.map((fArgs) => fArgs.name).join(",")}) => {`,
+    `${gtt("funcInit")} ${f.name} ${gtt("funcMid")} (${f.args
+      .map((fArgs) => fArgs.name)
+      .join(",")}) ${gtt("funcBlockInit")}`,
     ...f.body.map((l) => `\t${preLineTransform(l)}`),
-    `}`,
+    `${gtt("funcBlockEnd")}`,
   ];
 
   return functionLines;
