@@ -55,10 +55,10 @@ const functionCalleeTransform = (functionCallee) => {
 
     switch (type) {
       case "%d":
-        return `${variable} = ${Math.floor(Math.random() * 100)}`;
+        return `${variable} = Math.floor(Math.random() * 100 - 50)`;
 
       case "%f":
-        return `${variable} = ${Math.random() * 100}`;
+        return `${variable} = Math.random() * 100 - 50`;
 
       default:
         return `${variable} = "${Array.from({ length: 10 })
