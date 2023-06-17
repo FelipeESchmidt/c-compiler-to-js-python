@@ -63,6 +63,19 @@ const functionCalleeTransform = (functionCallee) => {
     .join("")})`;
 };
 
+let tabs = -1;
+
+const preLineTransform = (line) => {
+  tabs++;
+  const t = Array.from({ length: tabs })
+    .map(() => "\t")
+    .join("");
+
+  const lineTransformed = lineTransform(line);
+  tabs--;
+  return `${t}${lineTransformed}`;
+};
+
 const lineTransform = (line) => {
   if (line.type === "Macro") {
     return `//${line.subtype} "${line.file}.js"`;
@@ -104,49 +117,48 @@ const lineTransform = (line) => {
   if (line.type === "if") {
     return [
       `if (${mountIfCondition(line)}) {`,
-      ...line.body.map((l) => `\t${lineTransform(l)}`),
+      ...line.body.map((l) => `\t${preLineTransform(l)}`),
       "}",
     ].join("\n");
   }
   if (line.type === "elseif") {
     return [
       `else if (${mountIfCondition(line)}) {`,
-      ...line.body.map((l) => `\t${lineTransform(l)}`),
+      ...line.body.map((l) => `\t${preLineTransform(l)}`),
       "}",
     ].join("\n");
   }
   if (line.type === "else") {
     return [
       `else {`,
-      ...line.body.map((l) => `\t${lineTransform(l)}`),
+      ...line.body.map((l) => `\t${preLineTransform(l)}`),
       "}",
     ].join("\n");
   }
   if (line.type === "for") {
     return [
       `for (${mountBlockCondition(line)}) {`,
-      ...line.body.map((l) => `\t${lineTransform(l)}`),
+      ...line.body.map((l) => `\t${preLineTransform(l)}`),
       "}",
     ].join("\n");
   }
   if (line.type === "while") {
     return [
       `while (${mountBlockCondition(line)}) {`,
-      ...line.body.map((l) => `\t${lineTransform(l)}`),
+      ...line.body.map((l) => `\t${preLineTransform(l)}`),
       "}",
     ].join("\n");
   }
   if (line.type === "Call") {
     return functionCalleeTransform(line);
   }
-  console.log(line);
-  return "";
+  return lineReturn;
 };
 
 const functionTransform = (f) => {
   const functionLines = [
     `const ${f.name} = (${f.args.map((fArgs) => fArgs.name).join(",")}) => {`,
-    ...f.body.map((l) => `\t${lineTransform(l)}`),
+    ...f.body.map((l) => `\t${preLineTransform(l)}`),
     `}`,
   ];
 
@@ -157,7 +169,7 @@ const codeGenerator = ([globalStatements, functions]) => {
   const codeLines = [];
 
   globalStatements.body.forEach((line) => {
-    codeLines.push(lineTransform(line));
+    codeLines.push(preLineTransform(line));
   });
 
   functions.body.forEach((f) => {
