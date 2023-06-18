@@ -139,7 +139,7 @@ const lineTransform = (line) => {
       line.value.splice(1, 0, { value: " " });
     }
 
-    return `${line.value.map((lv) => lv.value).join("")}`;
+    return `${line.value.map((lv) => gstt(lv.type) || lv.value).join("")}`;
   }
   if (line.type === "Struct") {
     return [
