@@ -34,6 +34,16 @@ const pythonScanByType = (type) => {
   return types[type];
 };
 
+const jsvascriptScanByType = (type) => {
+  const types = {
+    "%d": "parseInt(prompt(),10)",
+    "%f": "parseFloat(prompt())",
+    "%s": "prompt()",
+  };
+
+  return types[type];
+};
+
 const getTranslationToken = (token) => {
   const language = codeTextarea.getAttribute("lan");
   return translationTokens[token][language];
@@ -133,7 +143,7 @@ const translationTokens = {
     py: "'",
   },
   scanFunc: {
-    js: null,
+    js: (type) => jsvascriptScanByType(type),
     py: (type) => pythonScanByType(type),
   },
   forCondition: {

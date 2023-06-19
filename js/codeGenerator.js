@@ -49,24 +49,8 @@ const functionCalleeTransform = (functionCallee) => {
     const variable = functionCallee.params.pop().value;
 
     const scanFunction = gtt("scanFunc");
-    if (scanFunction) {
-      return `${variable} = ${scanFunction(type)}`;
-    }
 
-    switch (type) {
-      case "%d":
-        return `${variable} = Math.floor(Math.random() * 100 - 50)`;
-
-      case "%f":
-        return `${variable} = Math.random() * 100 - 50`;
-
-      default:
-        return `${variable} = "${Array.from({ length: 10 })
-          .map(() =>
-            characters.charAt(Math.floor(Math.random() * characters.length))
-          )
-          .join("")}"`;
-    }
+    return `${variable} = ${scanFunction(type)}`;
   }
 
   const parsedParams = functionCallee.params.map((param) => {
@@ -102,9 +86,8 @@ const lineTransform = (line) => {
   if (line.type === "Define") {
     const isString = line.variableType === "StringLiteral";
     const aroundValueChar = isString ? `"` : "";
-    return `${gtt("constInit")}${line.variable} = ${aroundValueChar}${
-      line.variableValue
-    }${aroundValueChar}`;
+    return `${gtt("constInit")}${line.variable} = ${aroundValueChar}${line.variableValue
+      }${aroundValueChar}`;
   }
   if (line.type === "Statement") {
     line.value.pop();
@@ -118,9 +101,8 @@ const lineTransform = (line) => {
 
     if (isClassInitiator) {
       const variableName = line.value.pop().value;
-      return `${gtt("varInit")}${variableName} = ${gtt("classInitiator")}${
-        line.value[0].value
-      }()`;
+      return `${gtt("varInit")}${variableName} = ${gtt("classInitiator")}${line.value[0].value
+        }()`;
     }
 
     if (isVariableInitiation) {
