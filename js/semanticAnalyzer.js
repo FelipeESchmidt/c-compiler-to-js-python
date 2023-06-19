@@ -8,7 +8,7 @@
  *        { type: "CodeDomain"; params: { type: string; value: string; }[]; value: string; })[]
  * }} ast
  * */
-const processor = (ast) => {
+const semanticAnalysis = (ast) => {
   // Iniciamos buscando os Statements globais como variáveis globais, structs, includes
   const globalStatements = findGlobalStatements(ast.body);
 
