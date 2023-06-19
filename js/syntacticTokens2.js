@@ -40,4 +40,5 @@ const basicSyntacticTokens2 = [
   "Delimiter",
   "Terminator",
   "StringLiteral",
+  "Modulo",
 ];
